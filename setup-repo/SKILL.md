@@ -67,12 +67,18 @@ Confirm the layout:
 - **Single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. Most repos are this.
 - **Multi-context** — `CONTEXT-MAP.md` at the root pointing to per-context `CONTEXT.md` files (typically a monorepo).
 
+**Section D — Review & issue conventions.**
+
+> Explainer: The `afk-work-loop` and `triage` skills track work using review documents and issue files under `.scratch/`. Review docs live in `.scratch/review/open/` (active) and `.scratch/review/closed/` (done). Issue files use YAML frontmatter for status, dependencies, and review doc links. These conventions define the structure so every skill that reads or writes `.scratch/` agrees on the format.
+
+Show the user the defaults from the seed templates ([review-conventions.md](./review-conventions.md) and [issue-conventions.md](./issue-conventions.md)). Let them confirm or customize the directory layout, naming patterns, and frontmatter fields.
+
 ### 3. Confirm and edit
 
 Show the user a draft of:
 
 - The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
-- The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
+- The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, `docs/agents/review-conventions.md`, `docs/agents/issue-conventions.md`
 
 Let them edit before writing.
 
@@ -104,17 +110,29 @@ The block:
 ### Domain docs
 
 [one-line summary of layout — "single-context" or "multi-context"]. See `docs/agents/domain.md`.
+
+### Review conventions
+
+Review documents track implementation progress and self-review iterations in `.scratch/review/`. See `docs/agents/review-conventions.md`.
+
+### Issue conventions
+
+Issue files under `.scratch/` use YAML frontmatter for status, dependencies, and review doc links. See `docs/agents/issue-conventions.md`.
 ```
 
-Then write the three docs files using the seed templates in this skill folder as a starting point:
+Then write the docs files using the seed templates in this skill folder as a starting point:
 
 - [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
 - [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping
 - [domain.md](./domain.md) — domain doc consumer rules + layout
+- [review-conventions.md](./review-conventions.md) — review document structure and workflow
+- [issue-conventions.md](./issue-conventions.md) — issue file frontmatter and lifecycle
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+
+**`.gitignore`**: Ensure `.scratch` is listed in the repo's `.gitignore`. If `.gitignore` doesn't exist, create it. If it exists but doesn't contain `.scratch`, append it. This is done silently — no user confirmation needed.
 
 ### 5. Done
 

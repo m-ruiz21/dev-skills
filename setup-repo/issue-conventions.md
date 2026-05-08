@@ -1,6 +1,6 @@
-# Issue Conventions for AFK Work Loop
+# Issue Conventions
 
-These conventions extend the local issue tracker format (`.scratch/`) with fields the AFK work loop skill depends on.
+These conventions extend the local issue tracker format (`.scratch/`) with fields that workflow skills depend on.
 
 ## Frontmatter fields
 
@@ -51,7 +51,7 @@ The `closed/` subdirectory is created if it doesn't exist.
 
 ## Dependency resolution
 
-When the AFK skill closes an issue, it scans all open issues (files **not** in a `closed/` directory) for `blocked-by` entries referencing the closed issue's path. For each match:
+When a skill closes an issue, it scans all open issues (files **not** in a `closed/` directory) for `blocked-by` entries referencing the closed issue's path. For each match:
 
 1. Remove the closed issue's path from the `blocked-by` list.
 2. If `blocked-by` is now empty, change `status` to `needs-triage`.
