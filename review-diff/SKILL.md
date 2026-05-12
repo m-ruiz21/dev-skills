@@ -1,5 +1,5 @@
 ---
-name: review
+name: review-diff
 description: Run a multi-dimensional review of staged changes using parallel subagents for security, test gaps, plan alignment, code quality, and architecture. Compiles findings into a review document with pass/fail summary and severity ratings. Use when user says "review", "check my changes", "review staged", or as part of the dev-review loop.
 ---
 
