@@ -13,7 +13,7 @@ status: ready-for-agent
 blocked-by:
   - .scratch/auth/issues/01-login-flow.md
   - .scratch/auth/issues/02-session-store.md
-review-doc: .scratch/review/open/auth-03-token-refresh.md
+review-doc: .scratch/auth/reviews/03-token-refresh.md
 ---
 ```
 
@@ -38,7 +38,7 @@ An issue with a non-empty `blocked-by` list is not eligible for the work loop, e
 
 ### `review-doc`
 
-Path to the review document in `.scratch/review/open/`. Added automatically when the user rejects work so the next invocation has context on what was tried and what the feedback was.
+Path to the review document in `.scratch/<feature>/reviews/`. Added automatically when the user rejects work so the next invocation has context on what was tried and what the feedback was.
 
 ## Closed issue directory
 

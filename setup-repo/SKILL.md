@@ -69,7 +69,7 @@ Confirm the layout:
 
 **Section D — Review & issue conventions.**
 
-> Explainer: The `afk-work-loop` and `triage` skills track work using review documents and issue files under `.scratch/`. Review docs live in `.scratch/review/open/` (active) and `.scratch/review/closed/` (done). Issue files use YAML frontmatter for status, dependencies, and review doc links. These conventions define the structure so every skill that reads or writes `.scratch/` agrees on the format.
+> Explainer: The `worker` and `triage` skills track work using review documents and issue files under `.scratch/`. Review docs live in `.scratch/<feature>/reviews/` (active) and `.scratch/<feature>/reviews/closed/` (done). Issue files use YAML frontmatter for status, dependencies, and review doc links. These conventions define the structure so every skill that reads or writes `.scratch/` agrees on the format.
 
 Show the user the defaults from the seed templates ([review-conventions.md](./review-conventions.md) and [issue-conventions.md](./issue-conventions.md)). Let them confirm or customize the directory layout, naming patterns, and frontmatter fields.
 
@@ -113,7 +113,7 @@ The block:
 
 ### Review conventions
 
-Review documents track implementation progress and self-review iterations in `.scratch/review/`. See `docs/agents/review-conventions.md`.
+Review documents track implementation progress and self-review iterations in `.scratch/<feature>/reviews/`. See `docs/agents/review-conventions.md`.
 
 ### Issue conventions
 

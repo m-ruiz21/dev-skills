@@ -2,20 +2,26 @@
 
 ## Naming
 
-Review documents follow the pattern: `<feature>-<NN>-<slug>.md`
+Review documents follow the pattern: `<NN>-<slug>.md`, matching the issue they review.
 
 The name is derived from the source issue. For example:
-- Issue: `.scratch/auth/issues/03-token-refresh.md` → Review: `.scratch/review/open/auth-03-token-refresh.md`
-- Issue: `.scratch/ui/issues/01-dark-mode.md` → Review: `.scratch/review/open/ui-01-dark-mode.md`
+- Issue: `.scratch/auth/issues/03-token-refresh.md` → Review: `.scratch/auth/reviews/03-token-refresh.md`
+- Issue: `.scratch/ui/issues/01-dark-mode.md` → Review: `.scratch/ui/reviews/01-dark-mode.md`
 
 ## Directory structure
 
+Reviews live inside their feature's folder:
+
 ```
-.scratch/review/
-├── open/          # Active reviews awaiting human approval
-│   └── auth-03-token-refresh.md
-└── closed/        # Approved and completed reviews
-    └── ui-01-dark-mode.md
+.scratch/<feature-slug>/
+├── PRD.md
+├── progress.txt
+├── issues/
+│   └── ...
+└── reviews/
+    ├── 03-token-refresh.md      # Open review (awaiting human approval)
+    └── closed/
+        └── 01-dark-mode.md      # Approved and completed review
 ```
 
 ## Template
@@ -85,7 +91,7 @@ Date: YYYY-MM-DD
 
 ## Updating an existing review doc
 
-When reworking a previously reviewed item (i.e., the review doc already exists in `.scratch/review/open/`):
+When reworking a previously reviewed item (i.e., the review doc already exists in `.scratch/<feature>/reviews/`):
 
 1. Update the description / overview section to reflect new changes.
 2. Update the "Files changed" list.
