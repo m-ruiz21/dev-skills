@@ -1,2 +1,6 @@
 # Built binaries (users run `make build` or `go build`)
 /bin/ralph
+
+# .NET build artifacts
+bin/
+obj/

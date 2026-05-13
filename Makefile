@@ -1,10 +1,11 @@
 .PHONY: build clean install
 
 build:
-	go build -o bin/ralph ./cmd/ralph/
+	dotnet publish cmd/ralph/Ralph.csproj -c Release -o bin/ --self-contained false
 
 clean:
-	rm -f bin/ralph
+	rm -rf bin/
+	dotnet clean cmd/ralph/Ralph.csproj
 
 install: build
 	@echo "Plugin ready. Install in Claude Code with:"
