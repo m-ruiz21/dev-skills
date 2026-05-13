@@ -63,5 +63,14 @@ make build
 .claude-plugin/plugin.json   # Plugin manifest
 skills/                      # All skill definitions (SKILL.md + supporting files)
 cmd/ralph/                   # Go source for the ralph orchestrator
-bin/                         # Compiled binary (added to PATH when plugin is active)
+bin/                         # Compiled binary (auto-added to PATH when plugin is active)
+Makefile                     # `make build` to compile ralph
 ```
+
+## How It Works
+
+When installed as a Claude Code plugin:
+
+1. **Skills load automatically** — all 14 skill folders under `skills/` become available as `/slash-commands` in Claude Code.
+2. **`bin/` is added to PATH** — after `make build`, the `ralph` binary is callable directly from your terminal while the plugin is active.
+3. **`ralph` orchestrates the loop** — it spawns `copilot` CLI sessions using the skills (`/triage`, `/develop-task`, `/review-diff`) in sequence, with interactive prompts for PRD selection and user feedback between review cycles.
