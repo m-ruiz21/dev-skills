@@ -1,0 +1,18 @@
+{
+  "name": "dev-loop",
+  "owner": {
+    "name": "m-ruiz21"
+  },
+  "metadata": {
+    "description": "PRD-driven development workflow with triage, coding, and review loops powered by Copilot CLI skills.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "dev-loop",
+      "description": "PRD-driven development workflow with triage, coding, and review loops powered by Copilot CLI skills.",
+      "version": "0.1.0",
+      "source": "."
+    }
+  ]
+}
