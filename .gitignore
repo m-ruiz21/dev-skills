@@ -1,1 +1,2 @@
-/ralph
+# Built binaries (users run `make build` or `go build`)
+/bin/ralph
