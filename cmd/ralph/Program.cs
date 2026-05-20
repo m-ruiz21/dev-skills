@@ -27,7 +27,11 @@ rootCommand.SetHandler((int iterations) =>
 
     for (int i = 1; i <= iterations; i++)
     {
-        RunIteration(i, selectedPrd, selectedFeature);
+        if (RunIteration(i, selectedPrd, selectedFeature))
+        {
+            Console.WriteLine($"PRD complete after {i} iterations.");
+            return;
+        }
 
         if (i < iterations)
         {
@@ -89,12 +93,18 @@ static (string prdPath, string featureName) SelectPRD(List<string> prds)
     return (prdPath, featureName);
 }
 
-static void RunIteration(int i, string selectedPrd, string selectedFeature)
+static bool RunIteration(int i, string selectedPrd, string selectedFeature)
 {
     // Step 1: Triage
     PrintBanner($"ITERATION {i} — TRIAGING");
-    RunCopilot("--allow-tool", "read", "--allow-tool", "write",
+    var triageOutput = RunCopilotCapture("--yolo",
         "-p", "/triage Review and triage remaining issues. Reprioritize based on completed work and add agent brief to issues that are now ready-for-agent.");
+    Console.WriteLine(triageOutput);
+
+    if (triageOutput.Contains("<promise>COMPLETE</promise>"))
+    {
+        return true;
+    }
 
     // Step 2: Develop
     PrintBanner($"ITERATION {i} — WRITING CODE");
@@ -118,7 +128,7 @@ static void RunIteration(int i, string selectedPrd, string selectedFeature)
             "If every finding is resolved and there are no unaddressed [agent] comments, " +
             "output <promise>COMPLETE</promise>. Otherwise, provide a summary of remaining issues.";
 
-        var output = RunCopilotCapture("--allow-tool", "write", "-p", reviewPrompt);
+        var output = RunCopilotCapture("--yolo", "-p", reviewPrompt);
         Console.WriteLine(output);
 
         var reviewDoc = FindReviewDoc(selectedFeature);
@@ -191,6 +201,8 @@ static void RunIteration(int i, string selectedPrd, string selectedFeature)
     // Clean up progress.txt
     if (File.Exists("progress.txt"))
         File.Delete("progress.txt");
+
+    return false;
 }
 
 // --- Helpers ---
@@ -237,9 +249,12 @@ static void MoveCompletedIssue(string reviewDoc)
     }
 }
 
+static string GetCopilotBinary() =>
+    OperatingSystem.IsWindows() ? "copilot.cmd" : "copilot";
+
 static void RunCopilot(params string[] arguments)
 {
-    var psi = new ProcessStartInfo("copilot")
+    var psi = new ProcessStartInfo(GetCopilotBinary())
     {
         UseShellExecute = false
     };
@@ -254,7 +269,7 @@ static void RunCopilot(params string[] arguments)
 
 static string RunCopilotCapture(params string[] arguments)
 {
-    var psi = new ProcessStartInfo("copilot")
+    var psi = new ProcessStartInfo(GetCopilotBinary())
     {
         UseShellExecute = false,
         RedirectStandardOutput = true
