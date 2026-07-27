@@ -7,6 +7,7 @@ A Claude Code plugin that provides a PRD-driven development workflow with automa
 | Skill | Description |
 |-------|-------------|
 | `/develop-task` | Find and implement top-priority tasks from the local issue tracker |
+| `/handoff` | Compact the current conversation into a handoff document for another agent |
 | `/triage` | Triage issues through a state machine driven by triage roles |
 | `/review-diff` | Multi-dimensional review of staged changes |
 | `/tdd` | Test-driven development with red-green-refactor loop |
