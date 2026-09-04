@@ -42,6 +42,14 @@ RIGHT (vertical):
 
 ## Workflow
 
+### Progress recording
+
+When the caller provides a `.scratch/<feature>/progress.txt` path, append a
+concise entry after every set of file changes. Include the files or areas
+changed, the meaningful behavior implemented, and validation performed. Use
+`task-loop add-message -file <progress-path> -message "<summary>" -from developer`.
+Never rewrite or delete prior progress entries.
+
 ### 1. Planning
 
 When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.

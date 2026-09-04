@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Runs the task-loop CLI directly from source, without requiring `pip install`.
+set -euo pipefail
+
+resolve_script_dir() {
+  local source="${BASH_SOURCE[0]}"
+  while [ -h "$source" ]; do
+    local dir
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    source="$(readlink "$source")"
+    [[ $source != /* ]] && source="$dir/$source"
+  done
+  cd -P "$(dirname "$source")" && pwd
+}
+
+script_dir="$(resolve_script_dir)"
+package_root="$(cd "$script_dir/../src" && pwd)"
+
+exec env PYTHONPATH="$package_root:${PYTHONPATH:-}" python3 -m task_loop "$@"

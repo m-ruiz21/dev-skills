@@ -1,7 +1,7 @@
 {
   "name": "dev-loop",
   "description": "PRD-driven development workflow with triage, coding, and review loops powered by Copilot CLI skills.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "m-ruiz21"
   },

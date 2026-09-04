@@ -4,3 +4,11 @@
 # .NET build artifacts
 bin/
 obj/
+
+# Ralph run artifacts
+.ralph/
+
+# task-loop test scratch repos
+cmd/task_loop/tests/tmp/
+__pycache__/
+*.pyc

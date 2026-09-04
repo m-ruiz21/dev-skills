@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "task-loop"
+version = "0.1.0"
+description = "Coordinates one PRD issue at a time through triage, TDD development, testing, and review."
+requires-python = ">=3.9"
+readme = "README.md"
+
+[project.scripts]
+task-loop = "task_loop.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
