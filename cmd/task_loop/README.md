@@ -70,6 +70,10 @@ one in-scope issue reference. It also ensures the selected issue has a
 `review/<issue-name>.md` document, creating it when absent and leaving it
 untouched when present.
 
+Issue metadata is canonical YAML frontmatter. For migration compatibility,
+triage also reads plain `Status: <value>` and bold `**Status:** <value>` lines
+when canonical YAML does not provide a status; YAML always takes precedence.
+
 A third slice adds a testable development interface
 (`task_loop.development.run_development`): the selected issue, PRD,
 `progress.txt`, and its review thread are passed to a replaceable development

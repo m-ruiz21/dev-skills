@@ -10,6 +10,7 @@ discovering the issue queue, respecting `blocked-by` dependencies, and
 prioritizing `status: review` issues -- so that a scripted adapter (tests) or
 a future real agent only has to pick from an already-validated candidate set.
 """
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
@@ -17,6 +18,9 @@ from typing import Callable, Optional, Sequence, Union
 PathLike = Union[str, Path]
 
 ACTIONABLE_STATUSES = ("ready-for-agent", "review")
+INLINE_STATUS_PATTERN = re.compile(
+    r"^[ \t]*(?:\*\*Status:\*\*|Status:)[ \t]*(.*?)[ \t]*$"
+)
 
 
 class NoActionableIssuesError(RuntimeError):
@@ -49,7 +53,7 @@ TriageAgent = Callable[[TriageContext], str]
 
 
 def _parse_frontmatter(text: str) -> dict:
-    if not text.startswith("---"):
+    if not isinstance(text, str) or not text.startswith("---"):
         return {}
     end = text.find("\n---", 3)
     if end == -1:
@@ -79,19 +83,56 @@ def _parse_frontmatter(text: str) -> dict:
     return result
 
 
+def _parse_inline_status(text: str) -> Optional[str]:
+    """Read a legacy status line from the issue's metadata preamble."""
+    if not isinstance(text, str):
+        return None
+    lines = text.splitlines()
+    for line in lines:
+        if line.startswith("## "):
+            break
+        match = INLINE_STATUS_PATTERN.fullmatch(line)
+        if match:
+            return match.group(1).strip()
+    return None
+
+
+def _parse_issue_metadata(text: str) -> dict:
+    """Parse canonical YAML, filling absent fields from legacy inline metadata."""
+    metadata = _parse_frontmatter(text)
+    if "status" in metadata:
+        return metadata
+    inline_status = _parse_inline_status(text)
+    if inline_status is None:
+        return metadata
+    return {**metadata, "status": inline_status}
+
+
+def _dependency_references(metadata: dict) -> tuple:
+    blocked_by = metadata.get("blocked-by", [])
+    if isinstance(blocked_by, (list, tuple)):
+        return tuple(blocked_by)
+    if not blocked_by:
+        return ()
+    return (blocked_by,)
+
+
 def _load_issue(path: Path) -> Issue:
-    frontmatter = _parse_frontmatter(path.read_text())
+    metadata = _parse_issue_metadata(path.read_text())
     return Issue(
         path=path,
-        status=frontmatter.get("status", ""),
-        blocked_by=tuple(frontmatter.get("blocked-by", [])),
+        status=metadata.get("status", ""),
+        blocked_by=_dependency_references(metadata),
     )
 
 
 def _is_closed(path: Path) -> bool:
     if not path.is_file():
         return False
-    return _parse_frontmatter(path.read_text()).get("status") == "closed"
+    try:
+        return _load_issue(path).status == "closed"
+    except OSError:
+        return False
 
 
 def _dependency_resolved(dep_ref: str, issues_dir: Path) -> bool:

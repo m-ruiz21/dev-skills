@@ -10,6 +10,29 @@ _SUCCESS_TESTING_AGENT = lambda context: "[success]"
 
 
 class CliRunsTriageTests(unittest.TestCase):
+    def test_running_the_cli_selects_an_issue_with_bold_inline_metadata(self):
+        with temp_repo() as repo:
+            prd_path = write_prd(repo, "task-loop")
+            issue_path = (
+                repo / ".scratch" / "task-loop" / "issues" / "01-first.md"
+            )
+            issue_path.parent.mkdir(parents=True)
+            issue_path.write_text(
+                "# First slice\n\n"
+                "**Status:** ready-for-agent\n\n"
+                "## What to build\n\nDo the thing.\n"
+            )
+
+            exit_code, stdout, stderr = run_cli(
+                [str(prd_path)],
+                development_agent=_COMPLETED_DEVELOPMENT_AGENT,
+                testing_agent=_SUCCESS_TESTING_AGENT,
+                review_agent=passing_review_agent,
+            )
+
+            self.assertEqual(exit_code, 0, stderr)
+            self.assertIn(f"Selected issue: {issue_path}", stdout)
+
     def test_running_the_cli_selects_the_issue_and_creates_its_review_doc(self):
         with temp_repo() as repo:
             prd_path = write_prd(repo, "task-loop")

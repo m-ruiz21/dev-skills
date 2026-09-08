@@ -83,7 +83,7 @@ def start_run(prd_path: PathLike, max_iterations: Union[str, int, None] = None) 
         raise InvalidPrdPathError(f"PRD path does not exist: {prd_path}")
     if not path.is_file():
         raise InvalidPrdPathError(f"PRD path is not a file: {prd_path}")
-    if path.name != "PRD.md":
+    if path.name.casefold() != "PRD.md".casefold():
         raise InvalidPrdPathError(
             f"PRD path must point to a PRD.md file, got: {prd_path}"
         )

@@ -26,7 +26,7 @@ Issues, PRDs, and reviews for this repo live as markdown files in `.scratch/`.
 - Implementation issues are `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`
 - Review documents are `.scratch/<feature-slug>/reviews/<NN>-<slug>.md`, matching the issue they review
 - `progress.txt` is an append-only log — agents add a timestamped entry after each work session
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
+- Triage state is recorded canonically as `status` in YAML frontmatter (see `issue-conventions.md` and `triage-labels.md`); inline `Status:` forms are read only for migration compatibility
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading
 
 ## Commit policy

@@ -53,7 +53,21 @@ Iterate until the user approves the breakdown.
 
 For each approved slice, publish a new issue to the issue tracker. Use the issue body template below. These issues are considered ready for AFK agents, so publish them with the correct triage label unless instructed otherwise.
 
-Publish issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
+Publish issues in dependency order (blockers first) so you can reference real issue identifiers in dependency metadata and the "Blocked by" field.
+
+Only for local-markdown issue trackers, prepend this canonical YAML frontmatter
+to the issue body. Replace `blocked-by: []` with a YAML list of issue paths when
+the slice has dependencies. Do not add this frontmatter to GitHub, GitLab, or
+other non-local trackers; use their triage labels and native dependency metadata
+when available, and retain the "Blocked by" section in the issue body.
+
+```yaml
+---
+title: Short descriptive issue title
+status: ready-for-agent
+blocked-by: []
+---
+```
 
 <issue-template>
 ## Parent

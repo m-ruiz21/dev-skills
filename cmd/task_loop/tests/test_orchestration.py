@@ -44,6 +44,16 @@ class OrchestrationInterfaceTests(unittest.TestCase):
             with self.assertRaises(InvalidPrdPathError):
                 start_run(missing_path)
 
+    def test_start_run_accepts_an_explicit_prd_filename_with_different_casing(self):
+        with temp_repo() as repo:
+            canonical_path = write_prd(repo, "task-loop")
+            lowercase_path = canonical_path.with_name("prd.md")
+            canonical_path.rename(lowercase_path)
+
+            run = start_run(lowercase_path)
+
+            self.assertEqual(run.prd_path, lowercase_path)
+
     def test_start_run_raises_invalid_max_iterations_error_for_zero(self):
         with temp_repo() as repo:
             prd_path = write_prd(repo, "task-loop")
