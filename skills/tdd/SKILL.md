@@ -47,7 +47,9 @@ RIGHT (vertical):
 When the caller provides a `.scratch/<feature>/progress.txt` path, append a
 concise entry after every set of file changes. Include the files or areas
 changed, the meaningful behavior implemented, and validation performed. Use
-`task-loop add-message -file <progress-path> -message "<summary>" -from developer`.
+the exact bundled `add-message` command supplied by the caller; do not replace
+it with a bare `task-loop` command, and preserve the quoted absolute executable
+path exactly.
 Never rewrite or delete prior progress entries.
 
 ### 1. Planning

@@ -17,7 +17,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then publish it to the project issue tracker. For local-markdown issue trackers, create the feature directory (`.scratch/<feature-slug>/`) along with `issues/`, `reviews/`, and an empty `progress.txt`. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Write the PRD using the template below, then publish it to the project issue tracker. For local-markdown issue trackers, derive `<feature-slug>` as lowercase ASCII letters/numbers separated by single hyphens (80 characters maximum, non-empty, and not a Windows reserved device name), then create `.scratch/<feature-slug>/PRD.md` with create-new/refuse-overwrite behavior along with `issues/`, `reviews/`, and an empty `progress.txt`. Never overwrite an unrelated existing PRD; reuse an exact match, otherwise ask for another slug. Apply the `ready-for-agent` triage label - no need for additional triage.
 
 <prd-template>
 

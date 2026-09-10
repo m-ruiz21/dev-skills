@@ -1,0 +1,84 @@
+name: task-loop
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/task-loop.yml"
+      - ".claude-plugin/plugin.json"
+      - ".github/plugin/marketplace.json"
+      - ".gitattributes"
+      - ".gitignore"
+      - "Makefile"
+      - "bin/task-loop/**"
+      - "cmd/task_loop/**"
+      - "skills/develop-task/SKILL.md"
+      - "skills/review-diff/SKILL.md"
+      - "skills/setup-repo/**"
+      - "skills/tdd/SKILL.md"
+      - "skills/to-issues/SKILL.md"
+      - "skills/to-prd/SKILL.md"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/task-loop.yml"
+      - ".claude-plugin/plugin.json"
+      - ".github/plugin/marketplace.json"
+      - ".gitattributes"
+      - ".gitignore"
+      - "Makefile"
+      - "bin/task-loop/**"
+      - "cmd/task_loop/**"
+      - "skills/develop-task/SKILL.md"
+      - "skills/review-diff/SKILL.md"
+      - "skills/setup-repo/**"
+      - "skills/tdd/SKILL.md"
+      - "skills/to-issues/SKILL.md"
+      - "skills/to-prd/SKILL.md"
+
+permissions:
+  contents: read
+
+env:
+  GOTOOLCHAIN: go1.23.12
+
+jobs:
+  go:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.12"
+          cache-dependency-path: cmd/task_loop/go.sum
+      - name: Verify pinned Go toolchain
+        shell: bash
+        run: test "$(go env GOVERSION)" = "go1.23.12"
+      - name: Check formatting
+        working-directory: cmd/task_loop
+        shell: bash
+        run: test -z "$(gofmt -l .)"
+      - name: Test
+        working-directory: cmd/task_loop
+        run: go test ./...
+      - name: Vet
+        working-directory: cmd/task_loop
+        run: go vet ./...
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.12"
+          cache-dependency-path: cmd/task_loop/go.sum
+      - name: Verify pinned Go toolchain
+        run: test "$(go env GOVERSION)" = "go1.23.12"
+      - run: make check-task-loop
+      - name: Verify tracked package is current
+        run: make verify-task-loop-tracked

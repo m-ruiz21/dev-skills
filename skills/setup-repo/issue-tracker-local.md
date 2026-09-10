@@ -22,12 +22,36 @@ Issues, PRDs, and reviews for this repo live as markdown files in `.scratch/`.
 ## Conventions
 
 - One feature per directory: `.scratch/<feature-slug>/`
+- Feature slugs contain lowercase ASCII letters and numbers separated by single hyphens, are at most 80 characters, and are neither empty nor Windows reserved device names.
 - The PRD is `.scratch/<feature-slug>/PRD.md`
 - Implementation issues are `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`
 - Review documents are `.scratch/<feature-slug>/reviews/<NN>-<slug>.md`, matching the issue they review
 - `progress.txt` is an append-only log — agents add a timestamped entry after each work session
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
+- Issue triage and dependencies use the canonical YAML frontmatter below; body
+  `Status:` lines are not compatible with task-loop
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading
+
+## Issue format
+
+An issue with no dependencies starts with this exact frontmatter:
+
+```yaml
+---
+title: <issue title>
+status: ready-for-agent
+blocked-by: []
+---
+```
+
+For a dependent issue, replace `blocked-by: []` with the canonical YAML list:
+
+```yaml
+blocked-by:
+  - .scratch/<feature-slug>/issues/<NN>-<slug>.md
+```
+
+After the frontmatter, task-loop generates an optional `## Parent` section,
+then `## What to build`, `## Acceptance criteria`, and `## Blocked by`.
 
 ## Commit policy
 
@@ -35,7 +59,9 @@ Issues, PRDs, and reviews for this repo live as markdown files in `.scratch/`.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+Create a new file under `.scratch/<feature-slug>/` (creating the directory if
+needed). Use create-new/refuse-overwrite writes: reuse a PRD only when it is the same source,
+and never replace an unrelated PRD silently.
 
 ## When a skill says "fetch the relevant ticket"
 

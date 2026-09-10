@@ -27,18 +27,54 @@ so prior attempts, known pitfalls, and the current feature state are preserved.
 
 ### 2. Run task-loop
 
-Run:
+Resolve `<plugin-root>` from this skill's installed location: it is the parent
+of the `skills` directory containing this `SKILL.md`. Select the bundled native
+binary by operating system and architecture:
 
-```bash
-task-loop .scratch/<feature>/PRD.md
+| System | Architecture | Plugin-relative binary |
+| --- | --- | --- |
+| Windows | amd64 | `bin\task-loop\windows-amd64\task-loop.exe` |
+| Windows | arm64 | `bin\task-loop\windows-arm64\task-loop.exe` |
+| macOS | amd64 | `bin/task-loop/darwin-amd64/task-loop` |
+| macOS | arm64 | `bin/task-loop/darwin-arm64/task-loop` |
+| Linux | amd64 | `bin/task-loop/linux-amd64/task-loop` |
+| Linux | arm64 | `bin/task-loop/linux-arm64/task-loop` |
+
+Normalize `x86_64` and `AMD64` to `amd64`; normalize `aarch64` and `ARM64`
+to `arm64`. Stop with an unsupported-platform error for any other value.
+Resolve the selected path to an absolute path, verify that file exists, and
+invoke it only through a process API whose executable, argument array, and
+working directory are separate data fields:
+
+```text
+executable: <absolute selected task-loop binary path>
+arguments:  [<absolute selected PRD path>]
+workingDirectory: <absolute repository root>
 ```
+
+This is structured process data, not a shell command template. Never
+interpolate the plugin root, executable, repository, feature, or PRD path raw
+into PowerShell, Bash, Zsh, `cmd.exe`, or any other generated shell source.
+
+If only a shell-source interface is available, build the argv array in memory
+and encode **every** element, including the executable, with the same literal
+algorithm used by task-loop: PowerShell uses
+`"'" + s.Replace("'", "''") + "'"` and prefixes the joined argv with `& `;
+Bash/Zsh/POSIX uses `"'" + s.Replace("'", "'\"'\"'") + "'"`. Join encoded
+arguments with one space, never use double quotes, and never special-case a
+“safe-looking” path. If that encoder cannot be applied exactly, stop rather
+than run an unescaped command.
+
+Do not invoke `task-loop` as a bare command, depend on `PATH`, or build from
+source during a plugin run. A missing binary means the plugin package is
+incomplete or out of date.
 
 `task-loop` owns the issue workflow and bounded retries. Do not duplicate its
 phases in this skill or launch a separate implementation subagent around it.
-Its phase agents must append any files they change to the feature's
-`progress.txt` using `task-loop add-message`. After the command returns,
-reconcile those entries against the working tree and append anything they
-missed.
+Its phase agents receive an absolute, correctly quoted bundled invocation for
+appending files they change to the feature's `progress.txt`. After the command
+returns, reconcile those entries against the working tree and append anything
+they missed.
 
 If `task-loop` exits unsuccessfully, append the outcome to `progress.txt`,
 including the selected issue when known, changes made, failure or blocking

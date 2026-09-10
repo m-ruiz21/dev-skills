@@ -1,14 +1,17 @@
-# Built binaries (users run `make build` or `go build`)
-/bin/ralph
+# Local root binaries; task-loop's marketplace payload is intentionally tracked.
+/bin/*
+!/bin/task-loop/
+!/bin/task-loop/**
 
 # .NET build artifacts
-bin/
+cmd/ralph/bin/
 obj/
 
 # Ralph run artifacts
 .ralph/
 
-# task-loop test scratch repos
-cmd/task_loop/tests/tmp/
+# task-loop build and smoke scratch
+cmd/task_loop/build/
+
 __pycache__/
 *.pyc

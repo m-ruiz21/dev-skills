@@ -1,20 +1,27 @@
 ---
 name: review-diff
-description: Run a multi-dimensional review of staged changes using parallel subagents for security, test adequacy, plan alignment, code quality, and architecture. Emits structured grades and findings plus a human-readable review. Use when user says "review", "check my changes", "review staged", or as part of the dev-review loop.
+description: Run a multi-dimensional review of staged changes or an explicit caller-supplied issue patch using parallel subagents for security, test adequacy, plan alignment, code quality, and architecture. Emits structured grades and findings plus a human-readable review. Use when user says "review", "check my changes", "review staged", or as part of the dev-review loop.
 ---
 
 # Review
 
-Run five parallel review dimensions against the staged diff and compile a
-versioned structured result. When invoked by Ralph, the JSON artifact is the
-execution contract and Ralph renders Markdown and calculates pass/fail.
+Run five parallel review dimensions against the selected review delta and
+compile a versioned structured result. The default delta is the staged diff.
+When task-loop supplies an explicit issue-owned patch, review only that patch;
+it contains independently labeled run-start-to-current index and effective
+working-tree deltas. Identical layers may be emitted once. This preserves staged
+deletions and staged content hidden by later worktree restoration while also
+showing unstaged and untracked work, without including state that predated the
+run. When invoked by Ralph, the JSON artifact is the execution contract and
+Ralph renders Markdown and calculates pass/fail.
 
 **Commit policy: This skill does NOT commit.** Its caller owns any later
 approval and commit step.
 
 When invoked with a `.scratch/<feature>/progress.txt` path, record any files
-the review process creates or modifies by running
-`task-loop add-message -file <progress-path> -message "<summary>" -from reviewer`.
+the review process creates or modifies by running the exact bundled
+`add-message` command supplied by task-loop. Do not replace it with a bare
+`task-loop` command or alter the quoting around its absolute executable path.
 Do not add an entry for a read-only review that changes no files, and never
 rewrite prior progress.
 
@@ -22,7 +29,11 @@ rewrite prior progress.
 
 ### 1. Gather context
 
-- Run `git diff --staged`. If nothing is staged, tell the user and stop.
+- If the caller supplies an explicit issue-owned layered delta, read each
+  labeled layer and do not run `git diff --staged` or broaden the review to
+  other working-tree changes. Treat a combined identical-layer section as both
+  index and effective-worktree evidence. Otherwise run `git diff --staged`. If
+  every supplied layer is empty, tell the user and stop.
 - Identify the feature and issue from the caller, staged files, or local issue
   tracker.
 - Read the relevant PRD and issue acceptance criteria.
@@ -30,8 +41,8 @@ rewrite prior progress.
 
 ### 2. Launch review subagents
 
-Launch five parallel review agents, each receiving the staged diff and relevant
-context:
+Launch five parallel review agents, each receiving the selected delta and
+relevant context:
 
 1. **Security** — injection, authorization, secrets, insecure dependencies,
    configuration, and data exposure.
@@ -130,4 +141,5 @@ scraping this document.
 ### 5. Present to user
 
 List critical/high findings inline and report the structured artifact path.
-Remind the user that changes are staged but not committed.
+When using the default staged delta, remind the user that changes are staged
+but not committed. Do not make a staging claim for an explicit issue patch.

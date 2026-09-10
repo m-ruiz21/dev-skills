@@ -28,7 +28,8 @@ The canonical triage status. Values match `triage-labels.md`:
 - `wontfix`
 - `closed`
 
-Also supported inline as `Status: <value>` near the top of the issue body for backward compatibility with the existing convention.
+The status must be in YAML frontmatter. Do not use a body `Status:` line;
+task-loop does not treat it as canonical issue state.
 
 ### `blocked-by`
 
@@ -44,7 +45,7 @@ Path to the review document in `.scratch/<feature>/reviews/`. Added automaticall
 
 When an issue is accepted and closed:
 
-1. The `status` field (or `Status:` line) is set to `closed`.
+1. The frontmatter `status` field is set to `closed`.
 2. The issue file is moved to `.scratch/<feature>/issues/closed/<NN>-<slug>.md`.
 
 The `closed/` subdirectory is created if it doesn't exist.

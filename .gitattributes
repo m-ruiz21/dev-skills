@@ -1,0 +1,3 @@
+/bin/task-loop/SHA256SUMS text eol=lf
+/bin/task-loop/**/task-loop binary
+/bin/task-loop/**/task-loop.exe binary

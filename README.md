@@ -25,56 +25,70 @@ A Claude Code plugin that provides a PRD-driven development workflow with automa
 
 ## The `task-loop` CLI
 
-`task-loop` is the successor to `ralph` and the command you use to **start**
-new work: a small, installable Python CLI that coordinates one PRD issue
-at a time through triage, TDD development, testing, and multi-dimensional
-review. It keeps one selected issue across automatic retries and enforces a
-hard iteration budget that defaults to 10.
+`task-loop` is the Go successor to `ralph` and the command `/develop-task` uses
+to start new work. It coordinates one PRD issue through triage, TDD
+development, testing, and multi-dimensional review, retaining that issue
+across bounded retries.
 
-```bash
-make build-task-loop      # symlinks bin/task-loop (added to PATH by the plugin)
-task-loop                                # no PRD given: list available PRDs and exit
-task-loop .scratch/task-loop/PRD.md      # select a PRD, default cap of 10 iterations
-task-loop .scratch/task-loop/PRD.md --max-iterations 5
+The plugin ships six native, static (`CGO_ENABLED=0`) binaries:
+
+```text
+bin/task-loop/
+├── darwin-amd64/task-loop
+├── darwin-arm64/task-loop
+├── linux-amd64/task-loop
+├── linux-arm64/task-loop
+├── windows-amd64/task-loop.exe
+├── windows-arm64/task-loop.exe
+└── SHA256SUMS
 ```
 
-### Install globally for agents
+The skill selects the matching OS/architecture path relative to the installed
+plugin and invokes it by absolute path. It never relies on `PATH` or builds
+source at install time. Skill automation passes the executable, argument array,
+and repository working directory through a structured process interface rather
+than generating shell source. Shell-only runtimes use the documented reusable
+all-argv literal encoder. The binary uses that same literal shell quoting when
+it supplies its own `add-message` commands to phase agents.
 
-Build the Python CLI, then link it into a user-level binary directory:
-
-```bash
-make build-task-loop
-mkdir -p "$HOME/.local/bin"
-ln -sf "$(pwd)/bin/task-loop" "$HOME/.local/bin/task-loop"
-```
-
-Ensure `~/.local/bin` is on `PATH` in the shell that launches the agent. Add
-this to `~/.profile`, `~/.bashrc`, or the equivalent shell configuration:
+Contributors can regenerate and validate the tracked marketplace payload with:
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+make package-task-loop
+make check-task-loop
+make verify-task-loop-tracked
 ```
 
-Restart the terminal or agent process after changing `PATH`, then verify the
-commands from a directory outside this repository:
+Packaging uses the exact Go 1.23.12 toolchain (downloading it through
+`GOTOOLCHAIN` when needed), builds all six targets, verifies every binary's Go
+build information, and rewrites `SHA256SUMS`. Package and reproducibility
+checks reject compiler-version mismatches. The tracked-package check requires
+every expected artifact to be in Git with its contracted mode and rejects any
+tracked, untracked, or mode change under `bin/task-loop`.
 
-```bash
-cd "$HOME"
-command -v task-loop
-task-loop --help
-```
-
-The development, testing, and review agents may invoke
-`task-loop add-message` as a subprocess. Agents inherit `PATH` from the
-process that starts them, so `command -v task-loop` must succeed before
-launching the agent.
-
-Omitting the PRD path prints every `.scratch/<feature>/PRD.md` path in
-deterministic order and exits without starting an agent. A missing,
-unreadable, or non-`PRD.md` path fails with an actionable message, and
-`--max-iterations` rejects zero, negative, or malformed values. See
+Omitting the PRD path opens a scrollable keyboard picker in an interactive
+terminal; non-interactive callers still receive every
+`.scratch/<feature>/PRD.md` path in deterministic order and exit without
+starting an agent. A missing, unreadable, or non-`PRD.md` path fails with an
+actionable message, and `--max-iterations` rejects zero, negative, or malformed
+values. See
 [`cmd/task_loop/README.md`](cmd/task_loop/README.md) for the CLI's source
 layout and test suite (`make test-task-loop`).
+
+Local issues are created noninteractively with canonical YAML frontmatter:
+
+```text
+task-loop create-issue -request-file <path>
+task-loop create-issue -prd .scratch/<feature>/PRD.md (-title <title> | -title-file <path>) -description-file <path> -acceptance-criteria-file <path> [-parent <ref>] [-blocked-by <issue>]...
+```
+
+The command safely chooses the next `<NN>-<slug>.md` name, never overwrites,
+and prints the created path so later issues can repeat `-blocked-by` with actual
+dependency paths. Automated callers put the PRD path, title, multiline
+description, criteria, parent, and blocker paths in one strict,
+repository-confined JSON request file and pass only its path as structured argv;
+none of those values becomes generated shell source. Legacy individual flags
+remain available for direct human input.
 
 ### Threaded workflow messages
 
@@ -82,9 +96,10 @@ layout and test suite (`make test-task-loop`).
 append durable, threaded discussion to a review or progress file -- callers
 never edit those documents directly.
 
-```bash
-task-loop add-message -file review/01-issue.md -message "Starting work." -from developer
-task-loop add-message -file review/01-issue.md -message "Sounds good." -from reviewer -to 1
+```powershell
+$taskLoop = Resolve-Path .\bin\task-loop\windows-amd64\task-loop.exe
+& $taskLoop add-message -file review\01-issue.md -message "Starting work." -from developer
+& $taskLoop add-message -file review\01-issue.md -message "Sounds good." -from reviewer -to 1
 ```
 
 Omitting `-to` creates the file if needed and starts a new, stable thread in
@@ -278,8 +293,8 @@ cd skills
 make build
 ```
 
-To make `task-loop` available to agents outside an active
-plugin session, follow [Install globally for agents](#install-globally-for-agents).
+Marketplace installs use the tracked native package; no build runs during
+plugin installation. `make build` is for maintainers regenerating that package.
 
 ## Plugin Structure
 
@@ -287,9 +302,9 @@ plugin session, follow [Install globally for agents](#install-globally-for-agent
 .claude-plugin/plugin.json   # Plugin manifest
 skills/                      # All skill definitions (SKILL.md + supporting files)
 cmd/ralph/                   # .NET source for the ralph orchestrator
-cmd/task_loop/                # Python source for the task-loop CLI
-bin/                          # Compiled/linked binaries (auto-added to PATH when plugin is active)
-Makefile                     # `make build` to install task-loop
+cmd/task_loop/                # Go source and packaging tool for task-loop
+bin/task-loop/                # Tracked six-platform plugin binaries + checksums
+Makefile                     # Build, test, package, and verification targets
 ```
 
 ## How It Works
@@ -297,5 +312,6 @@ Makefile                     # `make build` to install task-loop
 When installed as a Claude Code plugin:
 
 1. **Skills load automatically** — all 14 skill folders under `skills/` become available as `/slash-commands` in Claude Code.
-2. **`bin/` is added to PATH** — after `make build`, the `task-loop` command is callable directly from your terminal while the plugin is active.
-3. **`task-loop` starts new work** — it selects a PRD and issue, then spawns Copilot CLI sessions for TDD development, testing, and `review-diff`, retrying actionable failures within the iteration budget. `task-loop add-message` appends durable, threaded discussion to review or progress files.
+2. **The bundled binary is resolved directly** — `/develop-task` selects the
+   installed plugin's OS/architecture binary without relying on `PATH`.
+3. **`task-loop` starts new work** — it selects a PRD and issue, then spawns Copilot CLI sessions for TDD development, testing, and `review-diff`, retrying actionable failures within the iteration budget. Its absolute bundled `add-message` invocation appends durable, threaded discussion to review or progress files.
