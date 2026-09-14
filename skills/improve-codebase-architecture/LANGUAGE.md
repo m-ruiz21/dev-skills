@@ -36,7 +36,10 @@ What maintainers get from depth. Change, bugs, knowledge, and verification conce
 - **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small, mockable, swappable parts — they just aren't part of the interface. A module can have **internal seams** (private to its implementation, used by its own tests) as well as the **external seam** at its interface.
 - **The deletion test.** Imagine deleting the module. If complexity vanishes, the module wasn't hiding anything (it was a pass-through). If complexity reappears across N callers, the module was earning its keep.
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
+- **Adapter count is evidence, not a verdict.** One adapter prompts a check
+  for speculative indirection; two can demonstrate variation. Existing public
+  contracts or real isolation/testing needs can justify a seam independently
+  of count. Do not create fake adapters just to justify an abstraction.
 
 ## Relationships
 

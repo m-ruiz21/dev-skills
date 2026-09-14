@@ -24,13 +24,19 @@ Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
 
 - **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.**
-- **One adapter = hypothetical seam. Two adapters = real seam.**
+- **Adapter count is a clue, not a verdict.** Require demonstrated variation,
+  isolation, or contract needs before adding or removing a seam.
 
 This skill is _informed_ by the project's domain model. The domain language gives names to good seams; ADRs record decisions the skill should not re-litigate.
 
 ## Process
 
 ### 1. Explore
+
+Read [engineering discipline](../tdd/engineering.md) and the
+[repository simplification audit](SIMPLIFICATION.md) before exploring. Pass
+both to any explorer. Use the audit to feed candidates into this workflow,
+not to replace deepening with deletion or automatically apply fixes.
 
 Read the project's domain glossary and any ADRs in the area you're touching first.
 
@@ -46,7 +52,12 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 ### 2. Present candidates
 
-Present a numbered list of deepening opportunities. For each candidate:
+Present a numbered list of deepening opportunities, including evidence-backed
+simplification candidates from the audit. Carry forward their cut/replacement, risks, verification plan, and
+estimated net lines/dependencies saved. Rank maintenance value, confidence, and
+risk before raw size; state coverage gaps and avoid double-counting alternatives.
+
+For each candidate:
 
 - **Files** — which files/modules are involved
 - **Problem** — why the current architecture is causing friction

@@ -11,6 +11,11 @@ When exploring the codebase, use the project's domain glossary to get a clear me
 
 ## Phase 1 — Build a feedback loop
 
+Read [engineering discipline](../tdd/engineering.md) before building the loop.
+Apply its guardrails to repros/instrumentation and its failure-handling guidance
+to the fix; use synthetic or redacted captures, bounded retries, and diagnostics
+that preserve causes without leaking secrets.
+
 **This is the skill.** Everything else is mechanical. If you have a fast, deterministic, agent-runnable pass/fail signal for the bug, you will find the cause — bisection, hypothesis-testing, and instrumentation all just consume that signal. If you don't have one, no amount of staring at code will save you.
 
 Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
@@ -89,6 +94,12 @@ Tool preference:
 **Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
 
 ## Phase 5 — Fix + regression test
+
+Revisit the engineering reuse ladder after tracing the failing operation and
+its callers. Fix the root cause at the correct owner, checking sibling paths,
+instead of spreading symptom guards. Preserve API/error contracts; prefer
+existing/stdlib/native mechanisms over a new workaround abstraction. Do not
+silence analyzers, tests, or types to make the repro pass.
 
 Write the regression test **before the fix** — but only if there is a **correct seam** for it.
 

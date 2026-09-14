@@ -54,6 +54,12 @@ Never rewrite or delete prior progress entries.
 
 ### 1. Planning
 
+Read [engineering discipline](engineering.md) before planning; apply it during
+GREEN and refactoring as well. Trace affected callers and tests, then choose
+the first reuse-ladder option that satisfies the behavior. Prefer deletion or
+reuse over a speculative abstraction; existing public contracts and real
+isolation needs still matter.
+
 When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.
 
 Before writing any code:
@@ -63,6 +69,8 @@ Before writing any code:
 - [ ] Identify opportunities for [deep modules](deep-modules.md) (small interface, deep implementation)
 - [ ] Design interfaces for [testability](interface-design.md)
 - [ ] List the behaviors to test (not implementation steps)
+- [ ] Model valid states and expected failures explicitly; plan boundary parsing,
+      side-effect/cleanup ownership, and risk-relevant failure checks
 - [ ] Get user approval on the plan
 
 Ask: "What should the public interface look like? Which behaviors are most important to test?"
@@ -95,12 +103,18 @@ Rules:
 - Only enough code to pass current test
 - Don't anticipate future tests
 - Keep tests focused on observable behavior
+- Apply the engineering readability, typing, documentation, and error-handling
+  guidance without adding unrequested features. Fix compiler/linter failures at
+  their cause, not with suppression or TypeScript `any`/casts.
+- Run the smallest meaningful checks while preserving required gates. Reuse
+  does not exempt changed behavior from RED→GREEN or regression coverage.
 
 ### 4. Refactor
 
 After all tests pass, look for [refactor candidates](refactoring.md):
 
-- [ ] Extract duplication
+- [ ] First remove proven dead code or reuse standard-library/native behavior;
+      extract only when it improves clarity and locality, not for hypothetical use
 - [ ] Deepen modules (move complexity behind simple interfaces)
 - [ ] Apply SOLID principles where natural
 - [ ] Consider what new code reveals about existing code

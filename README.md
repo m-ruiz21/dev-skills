@@ -23,6 +23,34 @@ A Claude Code plugin that provides a PRD-driven development workflow with automa
 | `/write-a-skill` | Create new agent skills |
 | `/zoom-out` | Zoom out to module map + callers |
 
+## Integrated engineering guidance
+
+The skills include a reuse-first simplification lens adapted from Ponytail:
+understand the behavior, question speculative work, reuse repository code,
+prefer standard-library/native facilities, then add only necessary custom code.
+Readability, real contracts, and evidence take priority over raw line savings.
+
+- `/review-diff` adds cut/replacement proposals and net-savings estimates to
+  code-quality/architecture review without replacing its five graded dimensions.
+- `/improve-codebase-architecture` feeds a ranked, read-only simplification audit
+  into its existing candidate selection and deepening workflow.
+- Both grilling skills, PRD/issue planning, TDD, development, diagnosis, and
+  prototyping explicitly load the relevant guidance in their working phases.
+  TDD red-green, progress recording, human approval, and required gates remain.
+
+The shared [engineering reference](skills/tdd/engineering.md) covers readable
+code, precise names, typed states/failures, documentation, cleanup, actionable
+errors, async style, and safety guardrails. BLOCKER/HIGH map to existing
+`blocker`/`high` review severities; savings never determine pass/fail.
+Small vertical increments and authorized early draft feedback are encouraged,
+not automatic publication.
+
+Everything is bundled with dev-loop: no Ponytail installation, activation,
+persona, or runtime hooks are needed. References resolve relative to installed
+skill files, not the target repository. The marketplace installs the whole
+plugin (`source: "."`, manifest `skills: "skills/"`), including sibling references.
+If manually copying skills, preserve those referenced sibling files as well.
+
 ## The `task-loop` CLI
 
 `task-loop` is the Go successor to `ralph` and the command `/develop-task` uses

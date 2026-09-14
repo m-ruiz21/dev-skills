@@ -9,13 +9,24 @@ The issue tracker and triage label vocabulary should have been provided to you â
 
 ## Process
 
+Before synthesis, read [engineering discipline](../tdd/engineering.md).
+Use its reuse ladder and delivery/guardrail sections to choose the smallest
+complete scope; carry applicable typing, failure, ownership, documentation, and
+validation requirements into implementation/testing decisions. Do not copy a
+generic policy checklist into every PRD.
+
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the PRD, and respect any ADRs in the area you're touching.
 
-2. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+2. Sketch the existing modules to reuse or modify and any genuinely missing
+behavior. Compare standard-library/native facilities and installed dependencies
+before proposing custom code. Extract a deep module only when it improves
+locality or hides real complexity, not merely to introduce another layer.
 
 A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+Check with the user that these modules match their expectations and prioritize
+behavioral tests. Non-trivial implementation still requires runnable checks;
+prioritization does not waive security or required validation gates.
 
 3. Write the PRD using the template below, then publish it to the project issue tracker. For local-markdown issue trackers, derive `<feature-slug>` as lowercase ASCII letters/numbers separated by single hyphens (80 characters maximum, non-empty, and not a Windows reserved device name), then create `.scratch/<feature-slug>/PRD.md` with create-new/refuse-overwrite behavior along with `issues/`, `reviews/`, and an empty `progress.txt`. Never overwrite an unrelated existing PRD; reuse an exact match, otherwise ask for another slug. Apply the `ready-for-agent` triage label - no need for additional triage.
 
@@ -31,7 +42,7 @@ The solution to the problem, from the user's perspective.
 
 ## User Stories
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+A focused, numbered list of user stories for the agreed scope. Each should be in the format of:
 
 1. As an <actor>, I want a <feature>, so that <benefit>
 
@@ -39,7 +50,9 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Cover the agreed behavior and important failure paths without speculative
+features. Keep the PRD small; split larger work into cohesive, independently
+verifiable vertical increments and record deferred work explicitly.
 
 ## Implementation Decisions
 
@@ -52,6 +65,8 @@ A list of implementation decisions that were made. This can include:
 - Schema changes
 - API contracts
 - Specific interactions
+- Reuse choices and evidence justifying new dependencies/abstractions
+- Valid typed states, expected failures, ownership/cleanup, and error contracts
 
 Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
 
@@ -64,6 +79,8 @@ A list of testing decisions that were made. Include:
 - A description of what makes a good test (only test external behavior, not implementation details)
 - Which modules will be tested
 - Prior art for the tests (i.e. similar types of tests in the codebase)
+- Runnable checks for non-trivial behavior, including relevant boundary/failure
+  cases, and the smallest validation scope that preserves required gates
 
 ## Out of Scope
 

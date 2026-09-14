@@ -29,6 +29,9 @@ rewrite prior progress.
 
 ### 1. Gather context
 
+- Read [engineering discipline](../tdd/engineering.md) and the
+  [simplification lens](simplification.md) before assessing the delta. Apply
+  the engineering policy across the relevant dimensions.
 - If the caller supplies an explicit issue-owned layered delta, read each
   labeled layer and do not run `git diff --staged` or broaden the review to
   other working-tree changes. Treat a combined identical-layer section as both
@@ -40,6 +43,11 @@ rewrite prior progress.
 - If Ralph supplied a run ID and artifact path, preserve both exactly.
 
 ### 2. Launch review subagents
+
+Give each reviewer the applicable engineering guidance. Give code-quality and
+architecture reviewers the simplification lens, asking for evidenced
+cut/replacement proposals and net-savings estimates alongside their normal
+checks. This is an additional lens, not a replacement review or sixth dimension.
 
 Launch five parallel review agents, each receiving the selected delta and
 relevant context:
@@ -58,6 +66,9 @@ relevant context:
 Each agent must return a proposed integer grade from 0 through 100, specific
 supporting evidence, and findings. Normalize all finding severities to `info`,
 `low`, `medium`, `high`, `critical`, or `blocker`.
+Map engineering **BLOCKER/HIGH** to `blocker`/`high`; do not invent severity
+values or change the numeric grade/caller policy contract. Report unobservable
+history/publishing actions as not assessed, rather than infer them from a diff.
 
 ### 3. Compile the structured review
 
@@ -140,6 +151,8 @@ scraping this document.
 
 ### 5. Present to user
 
-List critical/high findings inline and report the structured artifact path.
+List blocker/critical/high findings inline and report the structured artifact path.
+Include supported net-savings estimates (or "not estimated") in the existing
+dimension evidence and, outside Ralph, in the human-readable projection.
 When using the default staged delta, remind the user that changes are staged
 but not committed. Do not make a staging claim for an explicit issue patch.

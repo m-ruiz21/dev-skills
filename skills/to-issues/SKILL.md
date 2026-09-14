@@ -14,6 +14,11 @@ This workflow creates local issues beside a PRD under
 
 ### 1. Gather context
 
+Read [engineering discipline](../tdd/engineering.md) before drafting slices.
+Apply its reuse ladder to avoid speculative infrastructure issues, and carry
+relevant typed-contract, failure/cleanup, safety, and runnable-check requirements
+into acceptance criteria rather than duplicating generic boilerplate.
+
 Work from whatever is already in the conversation context. If the user passes an issue reference (issue number, URL, or path) as an argument, fetch it from the issue tracker and read its full body and comments.
 
 ### 2. Explore the codebase (optional)
@@ -24,12 +29,19 @@ If you have not already explored the codebase, do so to understand the current s
 
 Break the plan into **tracer bullet** issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
 
-Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
+Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an
+architectural decision or design review. AFK slices can be implemented without
+design clarification; they do not waive develop-task's human completion approval
+or authorize commits, pushes, or merges. Prefer AFK where possible.
 
 <vertical-slice-rules>
 - Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
 - A completed slice is demoable or verifiable on its own
 - Prefer many thin slices over few thick ones
+- Reuse before adding layers/dependencies; each non-trivial behavior needs a
+  runnable check, including relevant expected-failure and trust-boundary paths
+- Keep validation small but meaningful without suppressing required gates;
+  recommend early draft feedback only when publishing is authorized
 </vertical-slice-rules>
 
 ### 4. Quiz the user

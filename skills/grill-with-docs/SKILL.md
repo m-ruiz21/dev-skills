@@ -5,6 +5,13 @@ description: Grilling session that challenges your plan against the existing dom
 
 <what-to-do>
 
+Before the first design question, read
+[engineering discipline](../tdd/engineering.md). Apply the reuse ladder after
+checking code and domain constraints: challenge speculative work, then compare
+existing code, standard library, native platform, and installed dependencies
+before custom abstractions. Do not discard explicit requirements or ADRs just
+to reduce code.
+
 Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
 
 Ask the questions one at a time, waiting for feedback on each question before continuing.
@@ -64,6 +71,13 @@ When the user uses vague or overloaded terms, propose a precise canonical term. 
 ### Discuss concrete scenarios
 
 When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
+
+Probe exhaustive typed states, expected failures, cleanup ownership, actionable
+errors, and a runnable behavioral check. Ask which observed constraint justifies
+each abstraction and the smallest complete vertical increment. Use safe
+synthetic example values for complex request/response shapes. Record durable
+trade-offs and known limits under the existing ADR criteria, not every reuse
+choice; keep implementation details out of the domain glossary.
 
 ### Cross-reference with code
 

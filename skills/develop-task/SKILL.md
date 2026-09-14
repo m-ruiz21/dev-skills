@@ -10,11 +10,18 @@ approval, close approved work, and continue until the PRD is complete.
 
 **Commit policy: Do not commit work before the user approves the completed
 issue. After approval, the agent may create one issue-completion commit before
-continuing to the next issue. Never include unrelated pre-existing changes.**
+continuing to the next issue. Never include unrelated pre-existing changes.
+Explicit user restrictions on staging, commits, or publication take precedence
+over those steps below; report any deferred step without performing it.**
 
 ## Process
 
 ### 1. Select the PRD
+
+Read [engineering discipline](../tdd/engineering.md) before selecting work.
+Use its reuse/root-cause and delivery guidance when interpreting the PRD, and
+its guardrails throughout execution. The TDD and review skills load the same
+reference in their phases; do not replace task-loop's phases or gates.
 
 Find `.scratch/*/PRD.md` files.
 
@@ -82,6 +89,13 @@ reason, and the next action required. Present the blocker to the user and stop.
 
 ### 3. Record all changes
 
+Before declaring completion, check the result against the engineering reference:
+reuse rather than speculative helpers, precise contracts/types, local cleanup,
+specific errors and redacted diagnostics, and readable documented behavior.
+Verify meaningful runnable checks and required gates, with root-cause fixes
+rather than suppressions, compiler-silencing casts, or hand-edited generated
+output. Route failures through the existing retry/feedback workflow.
+
 After `task-loop` returns successfully, inspect the working tree and the
 entries written by its phase agents, then append a timestamped completion
 entry to `.scratch/<feature>/progress.txt`. `progress.txt` is append-only;
@@ -144,6 +158,11 @@ Repeat the task-loop → progress → user approval → issue completion cycle u
 the PRD is complete or the user stops the loop.
 
 ### 7. Offer to create a pull request
+
+For larger work, recommend smaller complete vertical increments and early draft
+feedback when useful, without publishing automatically or bypassing issue
+approval. Only publish/push after user authorization; never force push or
+rewrite default/open-PR branch history.
 
 When every PRD issue is completed:
 
